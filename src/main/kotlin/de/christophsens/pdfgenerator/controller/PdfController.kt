@@ -1,7 +1,6 @@
 package de.christophsens.pdfgenerator.controller
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.christophsens.pdfgenerator.entity.TemplateEntity
 import de.christophsens.pdfgenerator.service.PdfService
@@ -56,7 +55,7 @@ class PdfController(
         @PathVariable name: String,
         @PathVariable countryCode: String,
         @PathVariable languageCode: String,
-        @RequestBody jsonString:String
+        @RequestBody jsonString: String
     ): ResponseEntity<ByteArray> {
         val objectMapper = ObjectMapper()
         val jsonNode = objectMapper.readTree(jsonString)

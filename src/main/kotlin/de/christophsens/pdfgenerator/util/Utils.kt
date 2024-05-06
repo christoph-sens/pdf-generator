@@ -1,6 +1,5 @@
 package de.christophsens.pdfgenerator.util
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.christophsens.pdfgenerator.dto.TemplateDto
 import de.christophsens.pdfgenerator.dto.TranslationDto
 import de.christophsens.pdfgenerator.entity.TemplateEntity

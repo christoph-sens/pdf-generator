@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
 @Service
-class TranslationService(private val translationRepository: TranslationRepository, private val templateRepository: TemplateRepository) {
+class TranslationService(
+    private val translationRepository: TranslationRepository,
+    private val templateRepository: TemplateRepository
+) {
 
     fun saveTranslations(templateName: String, countryCode: String, languageCode: String, file: MultipartFile) {
-        val templateEntity = templateRepository.findByNameAndCountryCode(templateName, countryCode).first();
+        val templateEntity = templateRepository.findByNameAndCountryCode(templateName, countryCode).first()
 
         val translationMap = convertMultiPartFileToMap(file)
         val list = mutableListOf<TranslationEntity>()
