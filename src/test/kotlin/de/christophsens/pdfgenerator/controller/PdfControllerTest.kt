@@ -38,13 +38,13 @@ class PdfControllerTest {
 
         @JvmStatic
         @BeforeAll
-        fun beforeAll(): Unit {
+        fun beforeAll() {
             postgresql.start()
         }
 
         @JvmStatic
         @AfterAll
-        fun afterAll(): Unit {
+        fun afterAll() {
             postgresql.stop()
         }
     }
@@ -121,7 +121,7 @@ class PdfControllerTest {
     @Test
     fun `generate invoice`() {
         val templateName = "invoice"
-        val templateContent = getInvoiceTemplate();
+        val templateContent = getInvoiceTemplate()
         val countryCode = "DE"
 
         RestAssuredMockMvc.given()
