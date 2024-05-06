@@ -1,0 +1,1 @@
+create unique index unique_index_template on template (name, country_code)

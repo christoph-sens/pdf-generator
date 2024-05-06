@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${translation.title}">Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h2 th:text="${translation.title}">Invoice</h2>
+<table>
+    <thead>
+    <tr>
+        <th th:text="${translation.item}">Item</th>
+        <th th:text="${translation.quantity}">Quantity</th>
+        <th th:text="${translation.price}">Price</th>
+        <th th:text="${translation.tax}">Tax (%)</th>
+        <th th:text="${translation.brutto}">Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${data.items}">
+        <td th:text="${item.name}"></td>
+        <td th:text="${item.quantity}"></td>
+        <td th:text="${item.price}"></td>
+        <td th:text="${item.quantity * item.price}"></td>
+        <td th:text="${item.tax}"></td>
+    </tr>
+    </tbody>
+</table>
+<div th:text="${translation.brutto2}+ ${data.totalPrice} + ${data.currency}">Total</div>
+</body>
+</html>
