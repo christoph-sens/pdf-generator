@@ -5,6 +5,7 @@ import de.christophsens.pdfgenerator.repository.TemplateRepository
 import de.christophsens.pdfgenerator.repository.TranslationRepository
 import de.christophsens.pdfgenerator.util.convertMultiPartFileToMap
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 @Service
@@ -12,7 +13,7 @@ class TranslationService(
     private val translationRepository: TranslationRepository,
     private val templateRepository: TemplateRepository
 ) {
-
+    @Transactional
     fun saveTranslations(templateName: String, countryCode: String, languageCode: String, file: MultipartFile) {
         val templateEntity = templateRepository.findByNameAndCountryCode(templateName, countryCode).first()
 

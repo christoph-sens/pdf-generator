@@ -1,6 +1,5 @@
 package de.christophsens.pdfgenerator.controller
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.christophsens.pdfgenerator.controller.dto.Item
 import de.christophsens.pdfgenerator.controller.dto.Order
@@ -144,7 +143,7 @@ class PdfControllerTest {
         val data = getOrderTestData()
         val jsonString = ObjectMapper().writeValueAsString(data)
         val responseBody = RestAssuredMockMvc.given()
-            .body(jsonString )
+            .body(jsonString)
             .post("/pdf/$templateName/$countryCode/$languageCode")
             .then()
             .statusCode(200)
@@ -162,10 +161,10 @@ class PdfControllerTest {
             Item("item 3", 3, 3.00, 19.00),
             Item("item 4", 4, 4.00, 19.00)
         )
-        return Order(itemList, 30.00, "Euro" )
+        return Order(itemList, 30.00, "Euro")
     }
 
-    fun getTranslationsDe():String{
+    fun getTranslationsDe(): String {
         return """
             title,Rechnung
             item,Artikel
@@ -178,7 +177,7 @@ class PdfControllerTest {
         """.trimIndent()
     }
 
-    fun getInvoiceTemplate():String {
+    fun getInvoiceTemplate(): String {
         val path = "src/main/resources/templates/invoice.html"
         return File(path).readText(Charsets.UTF_8)
     }
