@@ -108,8 +108,8 @@ class PdfControllerTest {
 
         // check if the response
         val responseBody = RestAssuredMockMvc.given()
-            .queryParam("data", emptyMap<String, Any>())
-            .get("/pdf/$name/$countryCode/$languageCode")
+            .body(emptyMap<String, Any>())
+            .post("/pdf/$name/$countryCode/$languageCode")
             .then()
             .statusCode(200)
             .contentType(MediaType.APPLICATION_PDF_VALUE)

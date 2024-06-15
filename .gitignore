@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### FS ###
+*.DS_STORE
