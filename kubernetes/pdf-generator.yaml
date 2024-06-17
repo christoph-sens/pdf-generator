@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-generator-deployment
+  labels:
+    app: pdf-generator
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pdf-generator
+  template:
+    metadata:
+      labels:
+        app: pdf-generator
+    spec:
+      containers:
+      - name: pdf-generator
+        image: ghcr.io/christoph-sens/pdf-generator:v1.0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: pdf-generator-config
+              key: db_url
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: username
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdf-generator-service
+spec:
+  type: NodePort
+  selector:
+    name: pdf-generator
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30007
