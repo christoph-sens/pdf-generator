@@ -5,7 +5,7 @@ metadata:
   labels:
     app: pdf-generator
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: pdf-generator
@@ -43,9 +43,9 @@ metadata:
 spec:
   type: NodePort
   selector:
-    name: pdf-generator
+    app: pdf-generator
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-      nodePort: 30007
+      nodePort: 30100

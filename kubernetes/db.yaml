@@ -42,7 +42,7 @@ metadata:
   name: db
 spec:
   selector:
-    name: db
+    app: db
   ports:
     - protocol: TCP
       port: 5432

@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: pdf-generator-config
 data:
-  db_url: jdbc:postgresql://db.default.svc.cluster.local:5432/mydb
+  db_url: jdbc:postgresql://db:5432/mydb
