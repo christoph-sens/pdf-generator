@@ -2,7 +2,6 @@ package de.christophsens.pdfgenerator.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.christophsens.pdfgenerator.IntegrationTestBase
-import de.christophsens.pdfgenerator.PdfGeneratorApplicationTests
 import de.christophsens.pdfgenerator.controller.dto.Item
 import de.christophsens.pdfgenerator.controller.dto.Order
 import de.christophsens.pdfgenerator.repository.TemplateRepository
