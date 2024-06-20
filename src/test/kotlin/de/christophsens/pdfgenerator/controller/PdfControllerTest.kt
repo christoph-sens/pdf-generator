@@ -1,6 +1,8 @@
 package de.christophsens.pdfgenerator.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import de.christophsens.pdfgenerator.IntegrationTestBase
+import de.christophsens.pdfgenerator.PdfGeneratorApplicationTests
 import de.christophsens.pdfgenerator.controller.dto.Item
 import de.christophsens.pdfgenerator.controller.dto.Order
 import de.christophsens.pdfgenerator.repository.TemplateRepository
@@ -9,17 +11,15 @@ import de.christophsens.pdfgenerator.service.TemplateService
 import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.RestAssuredMockMvc
 import io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.utility.DockerImageName
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -28,25 +28,7 @@ import kotlin.test.assertTrue
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-class PdfControllerTest {
-
-    companion object {
-        @Container
-        @ServiceConnection
-        val postgresql = PostgreSQLContainer(DockerImageName.parse("postgres:latest"))
-
-        @JvmStatic
-        @BeforeAll
-        fun beforeAll() {
-            postgresql.start()
-        }
-
-        @JvmStatic
-        @AfterAll
-        fun afterAll() {
-            postgresql.stop()
-        }
-    }
+class PdfControllerTest : IntegrationTestBase() {
 
     @Autowired
     lateinit var mockMvc: MockMvc
