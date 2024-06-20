@@ -20,6 +20,6 @@ open class TemplateEntity {
     @Column(name = "content", length = Integer.MAX_VALUE)
     open var content: String? = null
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "templateEntity")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "templateEntity")
     open var translationEntities: MutableSet<TranslationEntity>? = mutableSetOf()
 }

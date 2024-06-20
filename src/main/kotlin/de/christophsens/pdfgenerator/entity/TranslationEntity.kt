@@ -20,12 +20,6 @@ open class TranslationEntity {
     @Column(name = "language_code", nullable = false, length = 2)
     open var languageCode: String? = null
 
-//    @Column(name = "country_code", nullable = false, length = 2)
-//    open var countryCode: String? = null
-//
-//    @Column(name = "template_name", nullable = false)
-//    open var templateName: String? = null
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumns(
         JoinColumn(name = "country_code", referencedColumnName = "country_code", insertable = true),

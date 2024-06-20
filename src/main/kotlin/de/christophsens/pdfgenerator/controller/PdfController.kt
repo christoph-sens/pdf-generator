@@ -41,7 +41,7 @@ class PdfController(
         @PathVariable templateName: String,
         @PathVariable countryCode: String,
         @PathVariable languageCode: String,
-        @RequestBody file: MultipartFile
+        @RequestParam file: MultipartFile
     ): HttpStatus {
         if (file.isEmpty || countryCode.isBlank() || languageCode.isBlank() || templateName.isBlank()) {
             return HttpStatus.BAD_REQUEST
