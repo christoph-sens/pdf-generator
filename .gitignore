@@ -34,3 +34,6 @@ build/
 
 ### FS ###
 *.DS_STORE
+
+### Generated Files ###
+*.pdf

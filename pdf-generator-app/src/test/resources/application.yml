@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: pdf-generator
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: myuser
+    password: mypassword
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 10
+        order_inserts: true
+  flyway:
+    enabled: false
+
+springdoc:
+  api-docs:
+    path: /api-docs
+
+
