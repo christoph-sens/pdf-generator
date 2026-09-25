@@ -26,7 +26,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.1.0")
-    testImplementation("io.rest-assured:spring-mock-mvc:6.0.0")
+    testImplementation("io.rest-assured:spring-mock-mvc:6.0.1")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.3.0")
 }
 
