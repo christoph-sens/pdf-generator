@@ -2,27 +2,18 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
 }
 
 dependencies {
-    implementation(project(":pdf-generator-domain"))
-    
+    implementation(platform(libs.spring.boot.bom))
+
+    implementation(project(":pdf-generator-application"))
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.postgresql:postgresql")
-    implementation("org.xhtmlrenderer:flying-saucer-pdf:10.5.0")
+    implementation(libs.flying.saucer.pdf)
 }
-
-tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-    enabled = false
-}
-
-tasks.named<Jar>("jar") {
-    enabled = true
-}
-

@@ -1,8 +1,8 @@
 rootProject.name = "pdf-generator"
 
 include(
-    "pdf-generator-domain",
+    "pdf-generator-application",
     "pdf-generator-adapter",
-    "pdf-generator-app"
+    "pdf-generator-bootstrap"
 )
 

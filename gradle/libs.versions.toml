@@ -1,0 +1,26 @@
+[versions]
+kotlin = "2.4.20"
+spring-boot = "4.1.1"
+flying-saucer = "10.5.0"
+springdoc = "3.1.1"
+testcontainers = "2.0.5"
+rest-assured = "6.0.1"
+archunit = "1.5.0"
+commons-csv = "1.14.1"
+
+[libraries]
+spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+flying-saucer-pdf = { module = "org.xhtmlrenderer:flying-saucer-pdf", version.ref = "flying-saucer" }
+springdoc-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
+rest-assured-spring-mock-mvc = { module = "io.rest-assured:spring-mock-mvc", version.ref = "rest-assured" }
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
+commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "commons-csv" }
+kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }

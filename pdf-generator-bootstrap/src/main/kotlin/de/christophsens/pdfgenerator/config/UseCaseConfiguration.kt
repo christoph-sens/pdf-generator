@@ -1,4 +1,4 @@
-package de.christophsens.pdfgenerator.adapter.config
+package de.christophsens.pdfgenerator.config
 
 import de.christophsens.pdfgenerator.domain.service.PdfService
 import de.christophsens.pdfgenerator.domain.service.TemplateService
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class DomainConfiguration {
+class UseCaseConfiguration {
 
     @Bean
     fun manageTemplateUseCase(templateRepository: TemplateRepository): ManageTemplateUseCase {
