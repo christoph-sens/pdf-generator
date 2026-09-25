@@ -1,0 +1,182 @@
+package de.christophsens.pdfgenerator.e2e
+
+import de.christophsens.pdfgenerator.IntegrationTestBase
+import de.christophsens.pdfgenerator.e2e.dto.Item
+import de.christophsens.pdfgenerator.e2e.dto.Order
+import de.christophsens.pdfgenerator.application.port.inbound.ManageTemplateUseCase
+import de.christophsens.pdfgenerator.domain.model.CountryCode
+import de.christophsens.pdfgenerator.domain.model.LanguageCode
+import de.christophsens.pdfgenerator.domain.model.TemplateKey
+import io.restassured.http.ContentType
+import io.restassured.module.mockmvc.RestAssuredMockMvc
+import io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.MockMvc
+import tools.jackson.databind.json.JsonMapper
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class PdfGeneratorEndToEndTest : IntegrationTestBase() {
+
+    @Autowired
+    lateinit var mockMvc: MockMvc
+
+    @Autowired
+    lateinit var manageTemplateUseCase: ManageTemplateUseCase
+
+    @Autowired
+    lateinit var jsonMapper: JsonMapper
+
+    @BeforeEach
+    fun setUp() {
+        mockMvc(mockMvc)
+    }
+
+    @Test
+    fun `test addTemplate and addTranslations and generatePdf`() {
+        // add a template to the database
+        val template = """<html><body><h1 th:text="${'$'}{translation.name}"></h1></body></html>"""
+        val name = "templateName"
+        val countryCode = "US"
+
+        RestAssuredMockMvc.given()
+            .contentType(ContentType.JSON)
+            .body(template)
+            .pathParam("name", name)
+            .pathParam("countryCode", countryCode)
+            .put("/template/{name}/{countryCode}")
+            .then()
+            .statusCode(200)
+
+        // check if the template has been added to the database
+        val templateEntity = manageTemplateUseCase.getTemplate(TemplateKey(name, CountryCode(countryCode)))
+        Assertions.assertEquals(template, templateEntity.content)
+
+        // add the translations to the database
+        val fileContent = """
+           name,value
+        """.trimIndent()
+
+        val templateName = "templateName"
+        val languageCode = "en"
+
+        RestAssuredMockMvc.given()
+            .contentType(ContentType.MULTIPART)
+            .multiPart("file", fileContent)
+            .put("/translations/$templateName/$countryCode/$languageCode")
+            .then()
+            .statusCode(200)
+
+        // check if the translations are available and related to the specified template
+        val template2 = manageTemplateUseCase.getTemplate(TemplateKey(templateName, CountryCode(countryCode)))
+        assertEquals(templateName, template2.key.name)
+
+        // check if the response
+        val responseBody = RestAssuredMockMvc.given()
+            .body(emptyMap<String, Any>())
+            .post("/pdf/$name/$countryCode/$languageCode")
+            .then()
+            .statusCode(200)
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
+            .extract().body()
+        assertTrue(responseBody.asByteArray().isNotEmpty())
+    }
+
+    @Test
+    fun `generate invoice`() {
+        val templateName = "invoice"
+        val templateContent = getInvoiceTemplate()
+        val countryCode = "DE"
+
+        RestAssuredMockMvc.given()
+            .contentType(ContentType.JSON)
+            .body(templateContent)
+            .pathParam("name", templateName)
+            .pathParam("countryCode", countryCode)
+            .put("/template/{name}/{countryCode}")
+            .then()
+            .statusCode(200)
+
+        val translations = getTranslationsDe()
+        val languageCode = "de"
+        RestAssuredMockMvc.given()
+            .contentType(ContentType.MULTIPART)
+            .multiPart("file", translations)
+            .put("/translations/$templateName/$countryCode/$languageCode")
+            .then()
+            .statusCode(200)
+        val data = getOrderTestData()
+        val jsonString = jsonMapper.writeValueAsString(data)
+        val responseBody = RestAssuredMockMvc.given()
+            .body(jsonString)
+            .post("/pdf/$templateName/$countryCode/$languageCode")
+            .then()
+            .statusCode(200)
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
+            .extract().body()
+        assertTrue(responseBody.asByteArray().isNotEmpty())
+    }
+
+
+    @Test
+    fun `uploading translations again replaces them instead of appending`() {
+        val templateName = "replace"
+        val countryCode = "DE"
+        RestAssuredMockMvc.given()
+            .body("<html/>")
+            .put("/template/$templateName/$countryCode")
+            .then()
+            .statusCode(200)
+
+        listOf("title,Alt\nold,Weg", "title,\"Neu, mit Komma\"").forEach { csv ->
+            RestAssuredMockMvc.given()
+                .contentType(ContentType.MULTIPART)
+                .multiPart("file", csv)
+                .put("/translations/$templateName/$countryCode/de")
+                .then()
+                .statusCode(200)
+        }
+
+        val template = manageTemplateUseCase.getTemplate(TemplateKey(templateName, CountryCode(countryCode)))
+        assertEquals(mapOf("title" to "Neu, mit Komma"), template.translationsFor(LanguageCode("de")))
+    }
+
+    fun getOrderTestData(): Order {
+        val itemList = listOf(
+            Item("item 1", 1, 1.00, 19.00),
+            Item("item 2", 2, 2.00, 19.00),
+            Item("item 3", 3, 3.00, 19.00),
+            Item("item 4", 4, 4.00, 19.00)
+        )
+        return Order(itemList, 30.00, "Euro")
+    }
+
+    fun getTranslationsDe(): String {
+        return """
+            title,Rechnung
+            item,Artikel
+            price,Preis
+            netto,Netto
+            tax,MwSt.
+            brutto,Brutto
+            brutto2,Total:
+            quantity,Anzahl
+        """.trimIndent()
+    }
+
+    fun getInvoiceTemplate(): String {
+        return this::class.java.classLoader.getResourceAsStream("templates/invoice.html")
+            ?.bufferedReader()
+            ?.use { it.readText() }
+            ?: throw IllegalStateException("Could not find invoice.html in classpath")
+    }
+}
+
