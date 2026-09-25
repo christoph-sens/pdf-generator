@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: pdf-generator
-        image: ghcr.io/christoph-sens/pdf-generator:v1.0
+        image: ghcr.io/christoph-sens/pdf-generator:1.1.1@sha256:51c81edd45e9eb75ab7a1591baa14e74fd2c347948253b678b01112008b30c18
         ports:
         - containerPort: 8080
         env:
