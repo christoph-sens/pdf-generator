@@ -7,6 +7,7 @@ dependencies {
     implementation(platform(libs.spring.boot.bom))
 
     implementation(project(":pdf-generator-application"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("org.springframework:spring-context")
     implementation("org.thymeleaf:thymeleaf-spring6")

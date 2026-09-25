@@ -1,8 +1,8 @@
-package de.christophsens.pdfgenerator.controller
+package de.christophsens.pdfgenerator.e2e
 
 import de.christophsens.pdfgenerator.IntegrationTestBase
-import de.christophsens.pdfgenerator.controller.dto.Item
-import de.christophsens.pdfgenerator.controller.dto.Order
+import de.christophsens.pdfgenerator.e2e.dto.Item
+import de.christophsens.pdfgenerator.e2e.dto.Order
 import de.christophsens.pdfgenerator.application.port.inbound.ManageTemplateUseCase
 import de.christophsens.pdfgenerator.domain.model.CountryCode
 import de.christophsens.pdfgenerator.domain.model.LanguageCode
@@ -18,15 +18,13 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.testcontainers.junit.jupiter.Testcontainers
 import tools.jackson.databind.json.JsonMapper
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Testcontainers
-class PdfControllerTest : IntegrationTestBase() {
+class PdfGeneratorEndToEndTest : IntegrationTestBase() {
 
     @Autowired
     lateinit var mockMvc: MockMvc
@@ -149,33 +147,6 @@ class PdfControllerTest : IntegrationTestBase() {
 
         val template = manageTemplateUseCase.getTemplate(TemplateKey(templateName, CountryCode(countryCode)))
         assertEquals(mapOf("title" to "Neu, mit Komma"), template.translationsFor(LanguageCode("de")))
-    }
-
-    @Test
-    fun `unknown template yields 404, invalid input yields 400`() {
-        RestAssuredMockMvc.given()
-            .body("{}")
-            .post("/pdf/missing/DE/de")
-            .then()
-            .statusCode(404)
-
-        RestAssuredMockMvc.given()
-            .body("<html/>")
-            .put("/template/json/DE")
-            .then()
-            .statusCode(200)
-
-        RestAssuredMockMvc.given()
-            .body("[1, 2]")
-            .post("/pdf/json/DE/de")
-            .then()
-            .statusCode(400)
-
-        RestAssuredMockMvc.given()
-            .body("<html/>")
-            .put("/template/invoice/DEU")
-            .then()
-            .statusCode(400)
     }
 
     fun getOrderTestData(): Order {

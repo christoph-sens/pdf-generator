@@ -7,6 +7,7 @@ dependencies {
     implementation(platform(libs.spring.boot.bom))
 
     implementation(project(":pdf-generator-application"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation(libs.commons.csv)
