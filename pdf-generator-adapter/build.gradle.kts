@@ -15,7 +15,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.postgresql:postgresql")
-    implementation("org.xhtmlrenderer:flying-saucer-pdf:10.2.2")
+    implementation("org.xhtmlrenderer:flying-saucer-pdf:10.5.0")
 }
 
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
