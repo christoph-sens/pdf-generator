@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  # Manual run = dry run: builds, tests and scans the image, never pushes.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Shared release, see https://github.com/christoph-sens/ci-workflows
+  release:
+    uses: christoph-sens/ci-workflows/.github/workflows/container-release.yml@52508e26c9c86eb81ca73342ef420585b952382b # v1.1.0
+    permissions:
+      contents: write          # GitHub release
+      packages: write          # push to GHCR
+      id-token: write          # Sigstore signing of the attestations
+      attestations: write
+      artifact-metadata: write
+    with:
+      docker-jar-dir: pdf-generator-bootstrap/build/libs
