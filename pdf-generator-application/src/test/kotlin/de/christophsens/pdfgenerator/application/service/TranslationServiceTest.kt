@@ -14,12 +14,12 @@ class TranslationServiceTest {
     private val service = TranslationService(translationRepository, templateRepository)
 
     @Test
-    fun `saveTranslations stores translations for the given language`() {
+    fun `saveTranslations replaces translations for the given language`() {
         templateRepository.save(Template(key = INVOICE_DE, content = ""))
 
-        service.saveTranslations(SaveTranslationsCommand(INVOICE_DE, DE, "title,Rechnung\nitem,Artikel"))
+        service.saveTranslations(SaveTranslationsCommand(INVOICE_DE, DE, mapOf("title" to "Rechnung", "item" to "Artikel")))
 
-        val saved = translationRepository.saved.getValue(INVOICE_DE)
+        val saved = translationRepository.saved.getValue(INVOICE_DE to DE)
         assertEquals(mapOf("title" to "Rechnung", "item" to "Artikel"), saved.associate { it.name to it.value })
         assertEquals(setOf(DE), saved.map { it.languageCode }.toSet())
     }
@@ -27,7 +27,7 @@ class TranslationServiceTest {
     @Test
     fun `saveTranslations throws for unknown template`() {
         assertFailsWith<TemplateNotFoundException> {
-            service.saveTranslations(SaveTranslationsCommand(INVOICE_DE, DE, "title,Rechnung"))
+            service.saveTranslations(SaveTranslationsCommand(INVOICE_DE, DE, mapOf("title" to "Rechnung")))
         }
     }
 }

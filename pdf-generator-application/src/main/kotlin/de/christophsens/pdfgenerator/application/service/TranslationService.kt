@@ -15,23 +15,10 @@ class TranslationService(
     override fun saveTranslations(command: SaveTranslationsCommand) {
         templateRepository.findByKey(command.templateKey) ?: throw TemplateNotFoundException(command.templateKey)
 
-        val translations = parseCsv(command.csvContent).map { (name, value) ->
+        val translations = command.translations.map { (name, value) ->
             Translation(name = name, value = value, languageCode = command.languageCode)
         }
 
-        translationRepository.saveAll(command.templateKey, translations)
-    }
-
-    private fun parseCsv(csvContent: String): Map<String, String> {
-        return csvContent.split("\n")
-            .filter { it.isNotBlank() }
-            .associate { line ->
-                val parts = line.split(",").map { it.trim() }
-                if (parts.size >= 2) {
-                    parts[0] to parts[1]
-                } else {
-                    parts[0] to ""
-                }
-            }
+        translationRepository.replaceAll(command.templateKey, command.languageCode, translations)
     }
 }

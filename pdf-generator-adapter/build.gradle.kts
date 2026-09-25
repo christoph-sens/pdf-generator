@@ -16,4 +16,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.postgresql:postgresql")
     implementation(libs.flying.saucer.pdf)
+    implementation(libs.commons.csv)
+
+    testImplementation(libs.kotlin.test.junit5)
 }

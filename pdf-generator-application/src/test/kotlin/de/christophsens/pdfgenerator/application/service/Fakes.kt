@@ -27,14 +27,10 @@ class InMemoryTemplateRepository : TemplateRepository {
 }
 
 class InMemoryTranslationRepository : TranslationRepository {
-    val saved = mutableMapOf<TemplateKey, MutableList<Translation>>()
+    val saved = mutableMapOf<Pair<TemplateKey, LanguageCode>, List<Translation>>()
 
-    override fun saveAll(templateKey: TemplateKey, translations: List<Translation>) {
-        saved.getOrPut(templateKey) { mutableListOf() } += translations
-    }
-
-    override fun deleteAll() {
-        saved.clear()
+    override fun replaceAll(templateKey: TemplateKey, languageCode: LanguageCode, translations: List<Translation>) {
+        saved[templateKey to languageCode] = translations
     }
 }
 

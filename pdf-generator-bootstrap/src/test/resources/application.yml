@@ -7,7 +7,7 @@ spring:
     password: mypassword
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: false
     open-in-view: false
     properties:
@@ -16,7 +16,7 @@ spring:
           batch_size: 10
         order_inserts: true
   flyway:
-    enabled: false
+    enabled: true
 
 springdoc:
   api-docs:

@@ -1,6 +1,8 @@
 package de.christophsens.pdfgenerator.adapter.outbound.persistence.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Entity
 @Table(name = "template")
@@ -14,6 +16,7 @@ open class TemplateJpaEntity {
     @Column(name = "name", nullable = false)
     open var name: String? = null
 
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "country_code", nullable = false, length = 2)
     open var countryCode: String? = null
 

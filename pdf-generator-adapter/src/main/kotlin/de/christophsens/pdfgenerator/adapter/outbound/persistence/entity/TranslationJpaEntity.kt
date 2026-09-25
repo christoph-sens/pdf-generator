@@ -1,6 +1,8 @@
 package de.christophsens.pdfgenerator.adapter.outbound.persistence.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Entity
 @Table(name = "translation")
@@ -17,6 +19,7 @@ open class TranslationJpaEntity {
     @Column(name = "value", length = Integer.MAX_VALUE)
     open var value: String? = null
 
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "language_code", nullable = false, length = 2)
     open var languageCode: String? = null
 

@@ -137,6 +137,44 @@ class PdfControllerTest : IntegrationTestBase() {
     }
 
 
+    @Test
+    fun `uploading translations again replaces them instead of appending`() {
+        val templateName = "replace"
+        val countryCode = "DE"
+        RestAssuredMockMvc.given()
+            .body("<html/>")
+            .put("/template/$templateName/$countryCode")
+            .then()
+            .statusCode(200)
+
+        listOf("title,Alt\nold,Weg", "title,\"Neu, mit Komma\"").forEach { csv ->
+            RestAssuredMockMvc.given()
+                .contentType(ContentType.MULTIPART)
+                .multiPart("file", csv)
+                .put("/translations/$templateName/$countryCode/de")
+                .then()
+                .statusCode(200)
+        }
+
+        val translations = springDataTranslationRepository.findAll().associate { it.name!! to it.value!! }
+        assertEquals(mapOf("title" to "Neu, mit Komma"), translations)
+    }
+
+    @Test
+    fun `unknown template yields 404 and invalid country code yields 400`() {
+        RestAssuredMockMvc.given()
+            .body("{}")
+            .post("/pdf/missing/DE/de")
+            .then()
+            .statusCode(404)
+
+        RestAssuredMockMvc.given()
+            .body("<html/>")
+            .put("/template/invoice/DEU")
+            .then()
+            .statusCode(400)
+    }
+
     fun getOrderTestData(): Order {
         val itemList = listOf(
             Item("item 1", 1, 1.00, 19.00),

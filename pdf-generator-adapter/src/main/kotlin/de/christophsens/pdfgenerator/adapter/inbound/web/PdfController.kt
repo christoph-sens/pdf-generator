@@ -57,7 +57,7 @@ class PdfController(
             SaveTranslationsCommand(
                 TemplateKey(templateName, CountryCode(countryCode)),
                 LanguageCode(languageCode),
-                csvContent
+                TranslationCsvParser.parse(csvContent)
             )
         )
         return ResponseEntity.ok().build()
