@@ -1,7 +1,7 @@
 package de.christophsens.pdfgenerator.adapter.outbound.html
 
-import de.christophsens.pdfgenerator.domain.model.Template
-import de.christophsens.pdfgenerator.domain.port.outbound.HtmlRenderer
+import de.christophsens.pdfgenerator.application.port.outbound.HtmlRenderer
+import de.christophsens.pdfgenerator.application.port.outbound.RenderRequest
 import org.springframework.stereotype.Component
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
@@ -14,18 +14,12 @@ class ThymeleafHtmlRenderer(private val templateEngine: TemplateEngine) : HtmlRe
         templateEngine.setTemplateResolver(StringTemplateResolver())
     }
 
-    override fun render(template: Template, data: Any): String {
-        // Transform translations to map
-        val translationMap: Map<String?, String?> =
-            template.translations.associate { it.name to it.value }
-
-        // Set context
+    override fun render(request: RenderRequest): String {
         val context = Context().apply {
-            setVariable("translation", translationMap)
-            setVariable("data", data)
+            setVariable("translation", request.translations)
+            setVariable("data", request.data)
         }
 
-        return templateEngine.process(template.content, context)
+        return templateEngine.process(request.templateContent, context)
     }
 }
-

@@ -1,15 +1,15 @@
 package de.christophsens.pdfgenerator.config
 
-import de.christophsens.pdfgenerator.domain.service.PdfService
-import de.christophsens.pdfgenerator.domain.service.TemplateService
-import de.christophsens.pdfgenerator.domain.service.TranslationService
-import de.christophsens.pdfgenerator.domain.port.inbound.GeneratePdfUseCase
-import de.christophsens.pdfgenerator.domain.port.inbound.ManageTemplateUseCase
-import de.christophsens.pdfgenerator.domain.port.inbound.ManageTranslationsUseCase
-import de.christophsens.pdfgenerator.domain.port.outbound.HtmlRenderer
-import de.christophsens.pdfgenerator.domain.port.outbound.PdfRenderer
-import de.christophsens.pdfgenerator.domain.port.outbound.TemplateRepository
-import de.christophsens.pdfgenerator.domain.port.outbound.TranslationRepository
+import de.christophsens.pdfgenerator.application.service.PdfService
+import de.christophsens.pdfgenerator.application.service.TemplateService
+import de.christophsens.pdfgenerator.application.service.TranslationService
+import de.christophsens.pdfgenerator.application.port.inbound.GeneratePdfUseCase
+import de.christophsens.pdfgenerator.application.port.inbound.ManageTemplateUseCase
+import de.christophsens.pdfgenerator.application.port.inbound.ManageTranslationsUseCase
+import de.christophsens.pdfgenerator.application.port.outbound.HtmlRenderer
+import de.christophsens.pdfgenerator.application.port.outbound.PdfRenderer
+import de.christophsens.pdfgenerator.application.port.outbound.TemplateRepository
+import de.christophsens.pdfgenerator.application.port.outbound.TranslationRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

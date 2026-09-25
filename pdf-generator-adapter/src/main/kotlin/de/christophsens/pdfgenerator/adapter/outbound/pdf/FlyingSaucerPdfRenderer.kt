@@ -1,6 +1,6 @@
 package de.christophsens.pdfgenerator.adapter.outbound.pdf
 
-import de.christophsens.pdfgenerator.domain.port.outbound.PdfRenderer
+import de.christophsens.pdfgenerator.application.port.outbound.PdfRenderer
 import org.springframework.stereotype.Component
 import org.xhtmlrenderer.pdf.ITextRenderer
 import java.io.ByteArrayOutputStream

@@ -2,10 +2,17 @@ package de.christophsens.pdfgenerator.adapter.inbound.web
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import de.christophsens.pdfgenerator.application.port.inbound.GeneratePdfCommand
+import de.christophsens.pdfgenerator.application.port.inbound.GeneratePdfUseCase
+import de.christophsens.pdfgenerator.application.port.inbound.ManageTemplateUseCase
+import de.christophsens.pdfgenerator.application.port.inbound.ManageTranslationsUseCase
+import de.christophsens.pdfgenerator.application.port.inbound.SaveTemplateCommand
+import de.christophsens.pdfgenerator.application.port.inbound.SaveTranslationsCommand
+import de.christophsens.pdfgenerator.domain.exception.InvalidInputException
 import de.christophsens.pdfgenerator.domain.exception.TemplateNotFoundException
-import de.christophsens.pdfgenerator.domain.port.inbound.GeneratePdfUseCase
-import de.christophsens.pdfgenerator.domain.port.inbound.ManageTemplateUseCase
-import de.christophsens.pdfgenerator.domain.port.inbound.ManageTranslationsUseCase
+import de.christophsens.pdfgenerator.domain.model.CountryCode
+import de.christophsens.pdfgenerator.domain.model.LanguageCode
+import de.christophsens.pdfgenerator.domain.model.TemplateKey
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -27,7 +34,7 @@ class PdfController(
         @PathVariable countryCode: String,
         @RequestBody template: String
     ): ResponseEntity<Void> {
-        manageTemplateUseCase.saveOrUpdate(name, countryCode, template)
+        manageTemplateUseCase.saveOrUpdate(SaveTemplateCommand(TemplateKey(name, CountryCode(countryCode)), template))
         return ResponseEntity.ok().build()
     }
 
@@ -41,12 +48,18 @@ class PdfController(
         @PathVariable languageCode: String,
         @RequestParam file: MultipartFile
     ): ResponseEntity<Void> {
-        if (file.isEmpty || countryCode.isBlank() || languageCode.isBlank() || templateName.isBlank()) {
+        if (file.isEmpty) {
             return ResponseEntity.badRequest().build()
         }
 
         val csvContent = file.inputStream.bufferedReader().use { it.readText() }
-        manageTranslationsUseCase.saveTranslations(templateName, countryCode, languageCode, csvContent)
+        manageTranslationsUseCase.saveTranslations(
+            SaveTranslationsCommand(
+                TemplateKey(templateName, CountryCode(countryCode)),
+                LanguageCode(languageCode),
+                csvContent
+            )
+        )
         return ResponseEntity.ok().build()
     }
 
@@ -58,8 +71,10 @@ class PdfController(
         @RequestBody jsonString: String
     ): ResponseEntity<ByteArray> {
         val jsonNode = objectMapper.readTree(jsonString)
-        val map: Map<String, Any> = objectMapper.convertValue(jsonNode, object : TypeReference<Map<String, Any>>() {})
-        val pdfBytes = generatePdfUseCase.generate(name, countryCode, languageCode, map)
+        val map: Map<String, Any?> = objectMapper.convertValue(jsonNode, object : TypeReference<Map<String, Any?>>() {})
+        val pdfBytes = generatePdfUseCase.generate(
+            GeneratePdfCommand(TemplateKey(name, CountryCode(countryCode)), LanguageCode(languageCode), map)
+        )
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
@@ -73,5 +88,9 @@ class PdfController(
     fun handleTemplateNotFound(ex: TemplateNotFoundException): ResponseEntity<String> {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.message)
     }
-}
 
+    @ExceptionHandler(InvalidInputException::class)
+    fun handleInvalidInput(ex: InvalidInputException): ResponseEntity<String> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
+    }
+}

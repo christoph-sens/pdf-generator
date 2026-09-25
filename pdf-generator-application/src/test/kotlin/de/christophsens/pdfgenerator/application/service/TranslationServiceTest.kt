@@ -1,5 +1,6 @@
-package de.christophsens.pdfgenerator.domain.service
+package de.christophsens.pdfgenerator.application.service
 
+import de.christophsens.pdfgenerator.application.port.inbound.SaveTranslationsCommand
 import de.christophsens.pdfgenerator.domain.exception.TemplateNotFoundException
 import de.christophsens.pdfgenerator.domain.model.Template
 import kotlin.test.Test
@@ -14,21 +15,19 @@ class TranslationServiceTest {
 
     @Test
     fun `saveTranslations stores translations for the given language`() {
-        templateRepository.save(Template(name = "invoice", countryCode = "DE", content = ""))
+        templateRepository.save(Template(key = INVOICE_DE, content = ""))
 
-        service.saveTranslations("invoice", "DE", "de", "title,Rechnung\nitem,Artikel")
+        service.saveTranslations(SaveTranslationsCommand(INVOICE_DE, DE, "title,Rechnung\nitem,Artikel"))
 
-        assertEquals(
-            mapOf("title" to "Rechnung", "item" to "Artikel"),
-            translationRepository.saved.associate { it.name to it.value }
-        )
-        assertEquals(setOf("de"), translationRepository.saved.map { it.languageCode }.toSet())
+        val saved = translationRepository.saved.getValue(INVOICE_DE)
+        assertEquals(mapOf("title" to "Rechnung", "item" to "Artikel"), saved.associate { it.name to it.value })
+        assertEquals(setOf(DE), saved.map { it.languageCode }.toSet())
     }
 
     @Test
     fun `saveTranslations throws for unknown template`() {
         assertFailsWith<TemplateNotFoundException> {
-            service.saveTranslations("missing", "DE", "de", "title,Rechnung")
+            service.saveTranslations(SaveTranslationsCommand(INVOICE_DE, DE, "title,Rechnung"))
         }
     }
 }

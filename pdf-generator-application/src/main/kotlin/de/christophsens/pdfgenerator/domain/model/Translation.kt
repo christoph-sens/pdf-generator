@@ -4,5 +4,5 @@ data class Translation(
     val id: Long? = null,
     val name: String,
     val value: String,
-    val languageCode: String
+    val languageCode: LanguageCode
 )

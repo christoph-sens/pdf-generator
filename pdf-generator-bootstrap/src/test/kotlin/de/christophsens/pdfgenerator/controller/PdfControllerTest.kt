@@ -6,7 +6,9 @@ import de.christophsens.pdfgenerator.adapter.outbound.persistence.repository.Spr
 import de.christophsens.pdfgenerator.adapter.outbound.persistence.repository.SpringDataTranslationRepository
 import de.christophsens.pdfgenerator.controller.dto.Item
 import de.christophsens.pdfgenerator.controller.dto.Order
-import de.christophsens.pdfgenerator.domain.port.inbound.ManageTemplateUseCase
+import de.christophsens.pdfgenerator.application.port.inbound.ManageTemplateUseCase
+import de.christophsens.pdfgenerator.domain.model.CountryCode
+import de.christophsens.pdfgenerator.domain.model.TemplateKey
 import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.RestAssuredMockMvc
 import io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc
@@ -66,7 +68,7 @@ class PdfControllerTest : IntegrationTestBase() {
             .statusCode(200)
 
         // check if the template has been added to the database
-        val templateEntity = manageTemplateUseCase.getTemplate(name, countryCode)
+        val templateEntity = manageTemplateUseCase.getTemplate(TemplateKey(name, CountryCode(countryCode)))
         Assertions.assertEquals(template, templateEntity.content)
 
         // add the translations to the database
@@ -85,8 +87,8 @@ class PdfControllerTest : IntegrationTestBase() {
             .statusCode(200)
 
         // check if the translations are available and related to the specified template
-        val template2 = manageTemplateUseCase.getTemplate(templateName, countryCode)
-        assertEquals(templateName, template2.name)
+        val template2 = manageTemplateUseCase.getTemplate(TemplateKey(templateName, CountryCode(countryCode)))
+        assertEquals(templateName, template2.key.name)
 
         // check if the response
         val responseBody = RestAssuredMockMvc.given()

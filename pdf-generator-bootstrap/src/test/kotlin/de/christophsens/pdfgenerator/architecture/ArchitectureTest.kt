@@ -14,11 +14,21 @@ class ArchitectureTest {
 
     @ArchTest
     val coreIsFrameworkFree: ArchRule = noClasses()
-        .that().resideInAPackage("..pdfgenerator.domain..")
+        .that().resideInAnyPackage("..pdfgenerator.domain..", "..pdfgenerator.application..")
         .should().dependOnClassesThat().resideInAnyPackage("org.springframework..", "jakarta..")
 
     @ArchTest
     val coreDoesNotDependOnAdapters: ArchRule = noClasses()
-        .that().resideInAPackage("..pdfgenerator.domain..")
+        .that().resideInAnyPackage("..pdfgenerator.domain..", "..pdfgenerator.application..")
         .should().dependOnClassesThat().resideInAPackage("..pdfgenerator.adapter..")
+
+    @ArchTest
+    val domainDoesNotDependOnApplication: ArchRule = noClasses()
+        .that().resideInAPackage("..pdfgenerator.domain..")
+        .should().dependOnClassesThat().resideInAPackage("..pdfgenerator.application..")
+
+    @ArchTest
+    val adaptersOnlyUseInboundPortsAndNotServices: ArchRule = noClasses()
+        .that().resideInAPackage("..pdfgenerator.adapter..")
+        .should().dependOnClassesThat().resideInAPackage("..pdfgenerator.application.service..")
 }
