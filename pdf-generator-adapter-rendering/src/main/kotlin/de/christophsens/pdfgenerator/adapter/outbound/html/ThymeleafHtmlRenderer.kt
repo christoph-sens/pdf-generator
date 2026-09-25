@@ -3,15 +3,16 @@ package de.christophsens.pdfgenerator.adapter.outbound.html
 import de.christophsens.pdfgenerator.application.port.outbound.HtmlRenderer
 import de.christophsens.pdfgenerator.application.port.outbound.RenderRequest
 import org.springframework.stereotype.Component
-import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
+import org.thymeleaf.spring6.SpringTemplateEngine
 import org.thymeleaf.templateresolver.StringTemplateResolver
 
 @Component
-class ThymeleafHtmlRenderer(private val templateEngine: TemplateEngine) : HtmlRenderer {
+class ThymeleafHtmlRenderer : HtmlRenderer {
 
-    init {
-        templateEngine.setTemplateResolver(StringTemplateResolver())
+    // Own engine resolving templates from strings; SpringTemplateEngine keeps SpEL expressions working.
+    private val templateEngine = SpringTemplateEngine().apply {
+        setTemplateResolver(StringTemplateResolver())
     }
 
     override fun render(request: RenderRequest): String {

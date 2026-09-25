@@ -1,13 +1,11 @@
 package de.christophsens.pdfgenerator.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import de.christophsens.pdfgenerator.IntegrationTestBase
-import de.christophsens.pdfgenerator.adapter.outbound.persistence.repository.SpringDataTemplateRepository
-import de.christophsens.pdfgenerator.adapter.outbound.persistence.repository.SpringDataTranslationRepository
 import de.christophsens.pdfgenerator.controller.dto.Item
 import de.christophsens.pdfgenerator.controller.dto.Order
 import de.christophsens.pdfgenerator.application.port.inbound.ManageTemplateUseCase
 import de.christophsens.pdfgenerator.domain.model.CountryCode
+import de.christophsens.pdfgenerator.domain.model.LanguageCode
 import de.christophsens.pdfgenerator.domain.model.TemplateKey
 import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.RestAssuredMockMvc
@@ -21,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.testcontainers.junit.jupiter.Testcontainers
+import tools.jackson.databind.json.JsonMapper
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -36,18 +35,10 @@ class PdfControllerTest : IntegrationTestBase() {
     lateinit var manageTemplateUseCase: ManageTemplateUseCase
 
     @Autowired
-    lateinit var springDataTranslationRepository: SpringDataTranslationRepository
-
-    @Autowired
-    lateinit var springDataTemplateRepository: SpringDataTemplateRepository
-
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
+    lateinit var jsonMapper: JsonMapper
 
     @BeforeEach
     fun setUp() {
-        springDataTranslationRepository.deleteAll()
-        springDataTemplateRepository.deleteAll()
         mockMvc(mockMvc)
     }
 
@@ -125,7 +116,7 @@ class PdfControllerTest : IntegrationTestBase() {
             .then()
             .statusCode(200)
         val data = getOrderTestData()
-        val jsonString = objectMapper.writeValueAsString(data)
+        val jsonString = jsonMapper.writeValueAsString(data)
         val responseBody = RestAssuredMockMvc.given()
             .body(jsonString)
             .post("/pdf/$templateName/$countryCode/$languageCode")
@@ -156,17 +147,29 @@ class PdfControllerTest : IntegrationTestBase() {
                 .statusCode(200)
         }
 
-        val translations = springDataTranslationRepository.findAll().associate { it.name!! to it.value!! }
-        assertEquals(mapOf("title" to "Neu, mit Komma"), translations)
+        val template = manageTemplateUseCase.getTemplate(TemplateKey(templateName, CountryCode(countryCode)))
+        assertEquals(mapOf("title" to "Neu, mit Komma"), template.translationsFor(LanguageCode("de")))
     }
 
     @Test
-    fun `unknown template yields 404 and invalid country code yields 400`() {
+    fun `unknown template yields 404, invalid input yields 400`() {
         RestAssuredMockMvc.given()
             .body("{}")
             .post("/pdf/missing/DE/de")
             .then()
             .statusCode(404)
+
+        RestAssuredMockMvc.given()
+            .body("<html/>")
+            .put("/template/json/DE")
+            .then()
+            .statusCode(200)
+
+        RestAssuredMockMvc.given()
+            .body("[1, 2]")
+            .post("/pdf/json/DE/de")
+            .then()
+            .statusCode(400)
 
         RestAssuredMockMvc.given()
             .body("<html/>")

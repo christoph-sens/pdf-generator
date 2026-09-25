@@ -5,6 +5,7 @@ import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.ArchRule
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
+import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 
 @AnalyzeClasses(
     packages = ["de.christophsens.pdfgenerator"],
@@ -31,4 +32,9 @@ class ArchitectureTest {
     val adaptersOnlyUseInboundPortsAndNotServices: ArchRule = noClasses()
         .that().resideInAPackage("..pdfgenerator.adapter..")
         .should().dependOnClassesThat().resideInAPackage("..pdfgenerator.application.service..")
+
+    @ArchTest
+    val adaptersAreIndependentOfEachOther: ArchRule = slices()
+        .matching("..pdfgenerator.adapter.(*).(*)..")
+        .should().notDependOnEachOther()
 }

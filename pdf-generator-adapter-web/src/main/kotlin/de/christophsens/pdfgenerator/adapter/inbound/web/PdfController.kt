@@ -1,31 +1,28 @@
 package de.christophsens.pdfgenerator.adapter.inbound.web
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import de.christophsens.pdfgenerator.application.port.inbound.GeneratePdfCommand
 import de.christophsens.pdfgenerator.application.port.inbound.GeneratePdfUseCase
 import de.christophsens.pdfgenerator.application.port.inbound.ManageTemplateUseCase
 import de.christophsens.pdfgenerator.application.port.inbound.ManageTranslationsUseCase
 import de.christophsens.pdfgenerator.application.port.inbound.SaveTemplateCommand
 import de.christophsens.pdfgenerator.application.port.inbound.SaveTranslationsCommand
-import de.christophsens.pdfgenerator.domain.exception.InvalidInputException
-import de.christophsens.pdfgenerator.domain.exception.TemplateNotFoundException
 import de.christophsens.pdfgenerator.domain.model.CountryCode
 import de.christophsens.pdfgenerator.domain.model.LanguageCode
 import de.christophsens.pdfgenerator.domain.model.TemplateKey
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.json.JsonMapper
 
 @RestController
 class PdfController(
     private val manageTemplateUseCase: ManageTemplateUseCase,
     private val manageTranslationsUseCase: ManageTranslationsUseCase,
     private val generatePdfUseCase: GeneratePdfUseCase,
-    private val objectMapper: ObjectMapper
+    private val jsonMapper: JsonMapper
 ) {
 
     @PutMapping("/template/{name}/{countryCode}")
@@ -63,6 +60,7 @@ class PdfController(
         return ResponseEntity.ok().build()
     }
 
+    // The body is taken as String and parsed here so that clients need not send a JSON content type.
     @PostMapping("/pdf/{name}/{countryCode}/{languageCode}", produces = [MediaType.APPLICATION_PDF_VALUE])
     fun getPdfDocument(
         @PathVariable name: String,
@@ -70,10 +68,9 @@ class PdfController(
         @PathVariable languageCode: String,
         @RequestBody jsonString: String
     ): ResponseEntity<ByteArray> {
-        val jsonNode = objectMapper.readTree(jsonString)
-        val map: Map<String, Any?> = objectMapper.convertValue(jsonNode, object : TypeReference<Map<String, Any?>>() {})
+        val data = jsonMapper.readValue(jsonString, object : TypeReference<Map<String, Any?>>() {})
         val pdfBytes = generatePdfUseCase.generate(
-            GeneratePdfCommand(TemplateKey(name, CountryCode(countryCode)), LanguageCode(languageCode), map)
+            GeneratePdfCommand(TemplateKey(name, CountryCode(countryCode)), LanguageCode(languageCode), data)
         )
 
         val headers = HttpHeaders()
@@ -82,15 +79,5 @@ class PdfController(
         headers.contentLength = pdfBytes.size.toLong()
 
         return ResponseEntity.ok().headers(headers).body(pdfBytes)
-    }
-
-    @ExceptionHandler(TemplateNotFoundException::class)
-    fun handleTemplateNotFound(ex: TemplateNotFoundException): ResponseEntity<String> {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.message)
-    }
-
-    @ExceptionHandler(InvalidInputException::class)
-    fun handleInvalidInput(ex: InvalidInputException): ResponseEntity<String> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
     }
 }

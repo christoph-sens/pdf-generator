@@ -8,17 +8,13 @@ dependencies {
     implementation(platform(libs.spring.boot.bom))
 
     implementation(project(":pdf-generator-application"))
-    implementation(project(":pdf-generator-adapter"))
+    implementation(project(":pdf-generator-adapter-web"))
+    implementation(project(":pdf-generator-adapter-persistence"))
+    implementation(project(":pdf-generator-adapter-rendering"))
 
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.springframework.boot:spring-boot-starter-flyway")
-    implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.postgresql:postgresql")
-    implementation(libs.springdoc.webmvc.ui)
+    runtimeOnly(libs.springdoc.webmvc.ui)
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
