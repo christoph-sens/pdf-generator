@@ -31,7 +31,8 @@ jobs:
       - name: Build
         run: ./gradlew build
       - name: Build Docker image
-        run: docker build -t ${{ github.event.repository.name }}:ci .
+        # Packages the jar built and tested above instead of compiling again inside Docker.
+        run: docker build --target prebuilt --build-context app=pdf-generator-bootstrap/build/libs -t ${{ github.event.repository.name }}:ci .
       # Scans the image (base OS packages and the bundled jars) for known vulnerabilities that have a fix.
       # Results go to Code Scanning (category trivy).
       - name: Scan Docker image
