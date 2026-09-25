@@ -15,11 +15,9 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-
     plugins.withId("org.jetbrains.kotlin.jvm") {
         extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> {
-            jvmToolchain(25)
+            jvmToolchain(rootProject.libs.versions.java.get().toInt())
             compilerOptions {
                 freeCompilerArgs.add("-Xjsr305=strict")
             }
