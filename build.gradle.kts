@@ -3,7 +3,7 @@ buildscript {
         constraints {
             // Spring Boot's Gradle plugin (buildpack image support) pulls commons-lang3 3.16.0, affected by
             // GHSA-j288-q9x7-2f5v. Build-time only, but keep the build classpath clean.
-            classpath("org.apache.commons:commons-lang3:3.20.0")
+            classpath("org.apache.commons:commons-lang3:3.21.0")
         }
         // Same for Jackson 3.1.5 on the build classpath (see the Jackson override below).
         classpath(platform("tools.jackson:jackson-bom:3.2.3"))
