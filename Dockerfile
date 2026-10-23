@@ -5,7 +5,7 @@ USER app
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 
-FROM gradle:9.8.0-jdk25 AS build
+FROM gradle:9.8.1-jdk25 AS build
 WORKDIR /app
 COPY . /app/.
 RUN ./gradlew :pdf-generator-bootstrap:bootJar --no-daemon
