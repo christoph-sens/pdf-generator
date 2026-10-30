@@ -6,7 +6,7 @@ buildscript {
             classpath("org.apache.commons:commons-lang3:3.21.0")
         }
         // Same for Jackson 3.1.5 on the build classpath (see the Jackson override below).
-        classpath(platform("tools.jackson:jackson-bom:3.2.3"))
+        classpath(platform("tools.jackson:jackson-bom:3.2.4"))
     }
 }
 
